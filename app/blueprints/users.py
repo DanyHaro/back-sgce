@@ -46,3 +46,28 @@ def login_user():
     else:
         return jsonify({"message": "Credenciales incorrectas", "status_code": 401}), 401
 
+@main_routes.route('/user', methods=['GET'])
+def get_all_users():
+    users = User.query.all()  # Obtiene todos los usuarios
+    users_list = []
+
+    for user in users:
+        users_list.append({
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+        })
+    
+    return jsonify(users_list), 200
+
+@main_routes.route('/user/<int:id>', methods=['GET'])
+def get_user_by_id(id):
+    user = User.query.get(id)  # Obtiene el usuario por ID
+    if user:
+        return jsonify({
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+        }), 200
+    else:
+        return jsonify({'message': 'Usuario no encontrado'}), 404

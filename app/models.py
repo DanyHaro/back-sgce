@@ -24,6 +24,13 @@ class Role(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
 
 
+# Tabla intermedia para muchos a muchos entre usuarios y roles
+class UserRoles(db.Model):
+    __tablename__ = 'user_roles'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), primary_key=False)
+
 class Transcripcion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     palabras_clave = db.Column(db.String, nullable = True)
@@ -60,9 +67,13 @@ class ResultadoRubrica(db.Model):
 class Sesion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String, nullable = True)
+    institucion = db.Column(db.String, nullable = True)
     fecha_dictada = db.Column(db.Date, nullable = True)
     duracion_video = db.Column(db.Numeric(3,2), nullable = True)
     fecha_creacion = db.Column(db.Date, nullable = True)
+    descripcion = db.Column(db.String, nullable = True)
+    grabacion = db.Column(db.String, nullable = True)
+    auditado = db.Column(db.Boolean, default=False, nullable = True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
 
 class Feedback(db.Model):
@@ -83,10 +94,3 @@ class AnalisisModelo(db.Model):
     id_sesion = db.Column(db.Integer, db.ForeignKey('sesion.id'), nullable = False)
     id_feedback = db.Column(db.Integer, db.ForeignKey('feedback.id'), nullable = False)
 
-
-# Tabla intermedia para muchos a muchos entre usuarios y roles
-class UserRoles(db.Model):
-    __tablename__ = 'user_roles'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=False)
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), primary_key=False)
