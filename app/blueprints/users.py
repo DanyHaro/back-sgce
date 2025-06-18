@@ -18,7 +18,7 @@ def create_user():
         return jsonify({"message": "Faltan datos obligatorios"}), 400
 
     # Crear un nuevo objeto User
-    new_user = User(username=username, email=email)
+    new_user = User(nombre_completo = nombre_completo,username=username, email=email)
     new_user.set_password(password)  # Usar el método set_password para encriptar la contraseña
 
     # Agregar el nuevo usuario a la base de datos
