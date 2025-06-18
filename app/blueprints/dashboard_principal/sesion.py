@@ -6,6 +6,7 @@ from firebase_admin import credentials, storage
 import os
 from datetime import datetime
 from ...models import Sesion, db
+from ...models import Transcripcion, Resumen, ResultadoRubrica, Feedback, User, db
 
 main_routes = Blueprint('sesions', __name__)
 
@@ -136,7 +137,65 @@ def get_session_by_id(id):
         }), 200
     else:
         return jsonify({'message': 'Sesión no encontrada'}), 404
-    
+
+@main_routes.route('/sesion/get-details/<int:id_sesion>', methods=['GET'])
+def get_sesion_details(id_sesion):
+
+    sesion = Sesion.query.filter_by(id = id_sesion).first()
+    user = User.query.filter_by(id = sesion.id_user).first()
+    transcripcion = Transcripcion.query.filter_by(id_sesion=id_sesion).first()
+    resumen = Resumen.query.filter_by(id_sesion=id_sesion).first()
+    resultado_rubrica = ResultadoRubrica.query.filter_by(id_sesion=id_sesion).first()
+    feedback = Feedback.query.filter_by(id_sesion=id_sesion).first()
+
+    #if not transcripcion or not resumen or not resultado_rubrica or not feedback:
+    #    return jsonify({'message': 'Datos no encontrados para la sesión especificada'}), 404
+
+    # Crear la respuesta con los datos solicitados
+    sesion_details = {
+        'titulo': sesion.titulo,
+        'institucion': sesion.institucion,
+        'fecha_dictada': sesion.fecha_dictada,
+        'duracion_video': sesion.duracion_video,
+        'grabacion' : sesion.grabacion,
+        'auditado' : sesion.auditado,
+        'user': {
+            'id': user.id,
+            'nombre_completo': user.nombre_completo,
+            'username': user.username,
+            'email': user.email
+        },
+        'transcripcion': {
+            'id': transcripcion.id,
+            'palabras_clave': transcripcion.palabras_clave,
+            'descripcion': transcripcion.descripcion
+        },
+        'resumen': {
+            'id': resumen.id,
+            'resumen_general': resumen.resumen_general,
+            'proposito_clase': resumen.proposito_clase,
+            'inicio': resumen.inicio,
+            'desarrollo': resumen.desarrollo,
+            'cierre': resumen.cierre
+        },
+        'resultado_rubrica': {
+            'id': resultado_rubrica.id,
+            'cumple_satis': resultado_rubrica.cumple_satis,
+            'cumple': resultado_rubrica.cumple,
+            'cumple_parcial': resultado_rubrica.cumple_parcial,
+            'cumple_no': resultado_rubrica.cumple_no
+        },
+        'feedback': {
+            'id': feedback.id,
+            'observacion': feedback.observacion,
+            'hallazgos': feedback.hallazgos,
+            'recomendacion': feedback.recomendacion,
+            'fecha_feedback': feedback.fecha_feedback.strftime('%Y-%m-%d')  # Formateamos la fecha
+        }
+    }
+
+    return jsonify(sesion_details), 200
+
 
 # Función para verificar si el archivo es MP4
 def allowed_file(filename):

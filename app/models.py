@@ -7,6 +7,7 @@ bcrypt = Bcrypt()
 # Modelo para el usuario
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    nombre_completo = db.Column(db.String(80), nullable = True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(150), unique=True, nullable = False)
@@ -61,7 +62,7 @@ class ResultadoRubrica(db.Model):
     cumple_parcial = db.Column(db.String, nullable = True)
     cumple_no = db.Column(db.String, nullable = True)
     id_rubrica = db.Column(db.Integer, db.ForeignKey('rubrica.id'), nullable = False)
-    id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    #id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     id_sesion = db.Column(db.Integer, db.ForeignKey('sesion.id'), nullable = False)
 
 class Sesion(db.Model):
