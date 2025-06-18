@@ -9,6 +9,7 @@ main_routes = Blueprint('users', __name__)
 def create_user():
     data = request.get_json()  # Obtener datos del cuerpo de la solicitud
     username = data.get('username')
+    nombre_completo = data.get('nombre_completo')
     password = data.get('password')
     email = data.get('email')
 
