@@ -55,6 +55,7 @@ def get_all_users():
     for user in users:
         users_list.append({
             'id': user.id,
+            'nombre_completo': user.nombre_completo,
             'username': user.username,
             'email': user.email,
         })
@@ -67,6 +68,7 @@ def get_user_by_id(id):
     if user:
         return jsonify({
             'id': user.id,
+            'nombre_completo': user.nombre_completo,
             'username': user.username,
             'email': user.email,
         }), 200
