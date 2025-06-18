@@ -127,9 +127,9 @@ def get_all_sessions():
         sesiones_list.append({
             'id': sesion.id,
             'titulo': sesion.titulo,
-            'fecha_dictada': sesion,  
+            'fecha_dictada': sesion.fecha_dictada.strftime('%Y-%m-%d %H:%M:%S') if sesion.fecha_dictada else None,  
             'duracion_video': str(sesion.duracion_video),  
-            'fecha_creacion': sesion.fecha_creacion,  
+            'fecha_creacion': sesion.fecha_creacion.strftime('%Y-%m-%d %H:%M:%S') if sesion.fecha_creacion else None,
             'id_user': sesion.id_user
         })
     return jsonify(sesiones_list), 200
@@ -141,9 +141,9 @@ def get_session_by_id(id):
         return jsonify({
             'id': sesion.id,
             'titulo': sesion.titulo,
-            'fecha_dictada': sesion.fecha_dictada,
+            'fecha_dictada': sesion.fecha_dictada.strftime('%Y-%m-%d %H:%M:%S') if sesion.fecha_dictada else None,
             'duracion_video': str(sesion.duracion_video),
-            'fecha_creacion': sesion.fecha_creacion,
+            'fecha_creacion': sesion.fecha_creacion.strftime('%Y-%m-%d %H:%M:%S') if sesion.fecha_creacion else None,
             'id_user': sesion.id_user
         }), 200
     else:
@@ -166,7 +166,7 @@ def get_sesion_details(id_sesion):
     sesion_details = {
         'titulo': sesion.titulo,
         'institucion': sesion.institucion,
-        'fecha_dictada': sesion.fecha_dictada,
+        'fecha_dictada': sesion.fecha_dictada.strftime('%Y-%m-%d %H:%M:%S') if sesion.fecha_dictada else None,
         'duracion_video': sesion.duracion_video,
         'grabacion' : sesion.grabacion,
         'auditado' : sesion.auditado,
@@ -201,7 +201,7 @@ def get_sesion_details(id_sesion):
             'observacion': feedback.observacion,
             'hallazgos': feedback.hallazgos,
             'recomendacion': feedback.recomendacion,
-            'fecha_feedback': feedback.fecha_feedback
+            'fecha_feedback': sesion.fecha_feedback.strftime('%Y-%m-%d %H:%M:%S') if sesion.fecha_feedback else None
         }
     }
 
