@@ -19,6 +19,12 @@ def create_user():
     # Verificar que todos los campos necesarios estén presentes
     if not username or not password or not email:
         return jsonify({"message": "Faltan datos obligatorios"}), 400
+    
+    if User.query.filter_by(username=username).first():
+        return jsonify({"message": "El nombre de usuario ya está en uso"}), 400
+
+    if User.query.filter_by(email=email).first():
+        return jsonify({"message": "El correo electrónico ya está registrado"}), 400
 
     # Crear un nuevo objeto User
     new_user = User(nombre_completo = nombre_completo,username=username, email=email)
