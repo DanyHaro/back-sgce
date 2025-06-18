@@ -14,6 +14,10 @@ main_routes = Blueprint('sesions', __name__)
 # Obtener las credenciales desde la variable de entorno
 firebase_credentials = os.getenv('FIREBASE_CREDENTIALS')
 
+# Verificar que la variable no esté vacía
+if not firebase_credentials:
+    raise ValueError("FIREBASE_CREDENTIALS no está configurada correctamente o es None")
+
 # Convertir las credenciales desde JSON (en formato string) a un diccionario
 cred_dict = json.loads(firebase_credentials)
 
