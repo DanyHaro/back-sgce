@@ -127,9 +127,9 @@ def get_all_sessions():
         sesiones_list.append({
             'id': sesion.id,
             'titulo': sesion.titulo,
-            'fecha_dictada': sesion.fecha_dictada.strftime('%Y-%m-%d'),  
+            'fecha_dictada': sesion,  
             'duracion_video': str(sesion.duracion_video),  
-            'fecha_creacion': sesion.fecha_creacion.strftime('%Y-%m-%d'),  
+            'fecha_creacion': sesion.fecha_creacion,  
             'id_user': sesion.id_user
         })
     return jsonify(sesiones_list), 200
@@ -141,9 +141,9 @@ def get_session_by_id(id):
         return jsonify({
             'id': sesion.id,
             'titulo': sesion.titulo,
-            'fecha_dictada': sesion.fecha_dictada.strftime('%Y-%m-%d'),
+            'fecha_dictada': sesion.fecha_dictada,
             'duracion_video': str(sesion.duracion_video),
-            'fecha_creacion': sesion.fecha_creacion.strftime('%Y-%m-%d'),
+            'fecha_creacion': sesion.fecha_creacion,
             'id_user': sesion.id_user
         }), 200
     else:
@@ -201,7 +201,7 @@ def get_sesion_details(id_sesion):
             'observacion': feedback.observacion,
             'hallazgos': feedback.hallazgos,
             'recomendacion': feedback.recomendacion,
-            'fecha_feedback': feedback.fecha_feedback.strftime('%Y-%m-%d')  # Formateamos la fecha
+            'fecha_feedback': feedback.fecha_feedback
         }
     }
 
