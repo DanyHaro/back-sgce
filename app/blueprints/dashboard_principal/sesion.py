@@ -121,12 +121,20 @@ def create_sesion():
 @main_routes.route('/sesion', methods=['GET'])
 def get_all_sessions():
     sesiones = Sesion.query.all()  # Obtiene todas las sesiones
+    user = User.query.filter_by(id = sesion.id_user).first()
     sesiones_list = []
 
     for sesion in sesiones:
         sesiones_list.append({
             'id': sesion.id,
             'titulo': sesion.titulo,
+            'institucion': sesion.institucion,
+            'user': {
+                'id': user.id,
+                'nombre_completo': user.nombre_completo,
+                'username': user.username,
+                'email': user.email
+            },
             'fecha_dictada': sesion.fecha_dictada.strftime('%Y-%m-%d') if sesion.fecha_dictada else None,  
             'duracion_video': str(sesion.duracion_video),  
             'fecha_creacion': sesion.fecha_creacion.strftime('%Y-%m-%d') if sesion.fecha_creacion else None,
