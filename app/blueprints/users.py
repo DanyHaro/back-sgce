@@ -57,7 +57,7 @@ def get_all_users():
             'id': user.id,
             'nombre_completo': user.nombre_completo,
             'username': user.username,
-            'email': user.email,
+            'email': user.email
         })
     
     return jsonify(users_list), 200
@@ -70,7 +70,7 @@ def get_user_by_id(id):
             'id': user.id,
             'nombre_completo': user.nombre_completo,
             'username': user.username,
-            'email': user.email,
+            'email': user.email
         }), 200
     else:
         return jsonify({'message': 'Usuario no encontrado'}), 404
