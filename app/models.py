@@ -1,8 +1,6 @@
 from datetime import datetime
 from flask_bcrypt import Bcrypt
-from . import db
-
-bcrypt = Bcrypt()
+from . import db, bcrypt
 
 # Modelo para el usuario
 class User(db.Model):
