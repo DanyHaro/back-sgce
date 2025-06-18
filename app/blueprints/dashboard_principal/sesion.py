@@ -6,14 +6,21 @@ from firebase_admin import credentials, storage
 import os
 from datetime import datetime
 from ...models import Sesion, db
+import json
 from ...models import Transcripcion, Resumen, ResultadoRubrica, Feedback, User, db
 
 main_routes = Blueprint('sesions', __name__)
 
-# Configurar Firebase Admin SDK
-cred = credentials.Certificate(r"C:\exam3-24564-firebase-adminsdk-uw7lf-beddd73802.json")
+# Obtener las credenciales desde la variable de entorno
+firebase_credentials = os.getenv('FIREBASE_CREDENTIALS')
+
+# Convertir las credenciales desde JSON (en formato string) a un diccionario
+cred_dict = json.loads(firebase_credentials)
+
+# Inicializar Firebase Admin SDK con las credenciales
+cred = credentials.Certificate(cred_dict)
 firebase_admin.initialize_app(cred, {
-    'storageBucket': 'exam3-24564.appspot.com' 
+    'storageBucket': 'exam3-24564.appspot.com'
 })
 
 # Ruta para crear una nueva sesión con video MP4
