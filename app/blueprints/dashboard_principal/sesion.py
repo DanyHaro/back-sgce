@@ -201,7 +201,7 @@ def get_sesion_details(id_sesion):
             'observacion': feedback.observacion,
             'hallazgos': feedback.hallazgos,
             'recomendacion': feedback.recomendacion,
-            'fecha_feedback': sesion.fecha_feedback.strftime('%Y-%m-%d') if sesion.fecha_feedback else None
+            'fecha_feedback': feedback.fecha_feedback.strftime('%Y-%m-%d') if feedback.fecha_feedback else None
         }
     }
 
