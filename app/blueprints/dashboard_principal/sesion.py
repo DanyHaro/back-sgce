@@ -121,10 +121,10 @@ def create_sesion():
 @main_routes.route('/sesion', methods=['GET'])
 def get_all_sessions():
     sesiones = Sesion.query.all()  # Obtiene todas las sesiones
-    user = User.query.filter_by(id = sesion.id_user).first()
     sesiones_list = []
 
     for sesion in sesiones:
+        user = User.query.filter_by(id=sesion.id_user).first()
         sesiones_list.append({
             'id': sesion.id,
             'titulo': sesion.titulo,
