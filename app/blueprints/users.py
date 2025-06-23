@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from ..models import User, Role, db
+from ..models import User, Role, UserRoles, db
 
 main_routes = Blueprint('users', __name__)
 
@@ -15,9 +15,10 @@ def create_user():
     nombre_completo = data.get('nombre_completo')
     password = data.get('password')
     email = data.get('email')
+    id_role = data.get('id_role')
 
     # Verificar que todos los campos necesarios estén presentes
-    if not username or not password or not email:
+    if not username or not password or not email or not id_role:
         return jsonify({"message": "Faltan datos obligatorios"}), 400
     
     if User.query.filter_by(username=username).first():
@@ -26,12 +27,16 @@ def create_user():
     if User.query.filter_by(email=email).first():
         return jsonify({"message": "El correo electrónico ya está registrado"}), 400
 
-    # Crear un nuevo objeto User
+    # Crear nuevo objeto user
     new_user = User(nombre_completo = nombre_completo,username=username, email=email)
     new_user.set_password(password)  # Usar el método set_password para encriptar la contraseña
-
     # Agregar el nuevo usuario a la base de datos
     db.session.add(new_user)
+
+    # crear nuevo objeto user_role
+    new_user_role = UserRoles(new_user.id, id_role)
+    db.session.add(new_user_role)
+
     db.session.commit()
 
     return jsonify({"message": "Usuario creado exitosamente", "id": new_user.id}), 201

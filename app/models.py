@@ -67,6 +67,7 @@ class Sesion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String, nullable = True)
     institucion = db.Column(db.String, nullable = True)
+    nivel = db.Column(db.String(100), nullable = True)
     fecha_dictada = db.Column(db.Date, nullable = True)
     duracion_video = db.Column(db.Numeric(3,2), nullable = True)
     fecha_creacion = db.Column(db.Date, nullable = True)

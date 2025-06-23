@@ -57,6 +57,7 @@ def create_sesion_firebase():
         new_sesion = Sesion(
             titulo=request.form.get('titulo'),
             institucion=request.form.get('institucion'),
+            nivel=request.form.get('nivel'),
             fecha_dictada=request.form.get('fecha_dictada'),
             duracion_video=request.form.get('duracion_video'),
             descripcion = request.form.get('descripcion'),
