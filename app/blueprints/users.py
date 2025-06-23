@@ -76,15 +76,41 @@ def get_all_users():
     
     return jsonify(users_list), 200
 
+@main_routes.route('/user/docentes', methods=['GET'])
+def get_docentes():
+    docentes = User.query.join(UserRoles, User.id == UserRoles.user_id)\
+                        .join(Role, UserRoles.role_id == Role.id)\
+                        .filter(Role.name == 'Docente')\
+                        .all()
+    
+    # Formatear el resultado
+    result = []
+    for docente in docentes:
+        result.append({
+            "id": docente.id,
+            "nombre_completo": docente.nombre_completo,
+            "username": docente.username,
+            "email": docente.email,
+            "roles": [role.name for role in docente.roles]
+        })
+
+    return jsonify(result), 200
+
 @main_routes.route('/user/<int:id>', methods=['GET'])
 def get_user_by_id(id):
-    user = User.query.get(id)  # Obtiene el usuario por ID
+    user = User.query.get(id)
     if user:
         return jsonify({
             'id': user.id,
             'nombre_completo': user.nombre_completo,
             'username': user.username,
-            'email': user.email
+            'email': user.email,
+            'roles': [
+                {
+                    'id': role.id,
+                    'name': role.name
+                } for role in user.roles
+            ]
         }), 200
     else:
         return jsonify({'message': 'Usuario no encontrado'}), 404
