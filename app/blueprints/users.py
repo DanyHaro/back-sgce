@@ -32,6 +32,7 @@ def create_user():
     new_user.set_password(password)  # Usar el método set_password para encriptar la contraseña
     # Agregar el nuevo usuario a la base de datos
     db.session.add(new_user)
+    db.session.flush()
 
     # crear nuevo objeto user_role
     new_user_role = UserRoles(user_id= new_user.id, role_id = id_role)
