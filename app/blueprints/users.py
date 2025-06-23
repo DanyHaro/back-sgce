@@ -34,7 +34,7 @@ def create_user():
     db.session.add(new_user)
 
     # crear nuevo objeto user_role
-    new_user_role = UserRoles(new_user.id, id_role)
+    new_user_role = UserRoles(user_id= new_user.id, role_id = id_role)
     db.session.add(new_user_role)
 
     db.session.commit()
