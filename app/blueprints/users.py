@@ -1,11 +1,11 @@
 from flask import Blueprint, request, jsonify
-from flask_cors import CORS
+#from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from ..models import User, Role, UserRoles, db
 
 main_routes = Blueprint('users', __name__)
 
-CORS(main_routes, resources={r"/*": {"origins": "*"}})
+#CORS(main_routes, resources={r"/*": {"origins": "*"}})
 
 # Ruta para crear un nuevo usuario
 @main_routes.route('/user/create', methods=['POST'])

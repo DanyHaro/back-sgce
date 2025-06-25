@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from .config import Config
@@ -18,6 +19,8 @@ def create_app():
     migrate.init_app(app, db)
     bcrypt.init_app(app)
     jwt.init_app(app)
+
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
     from .blueprints.users import main_routes as users_routes 
     from .blueprints.dashboard_principal.sesion import main_routes as sesion_routes
