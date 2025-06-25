@@ -189,7 +189,7 @@ def get_sesion_details(id_sesion):
             'id': transcripcion.id,
             'palabras_clave': transcripcion.palabras_clave,
             'descripcion': transcripcion.descripcion
-        },
+        } if transcripcion else {},
         'resumen': {
             'id': resumen.id,
             'resumen_general': resumen.resumen_general,
@@ -197,21 +197,21 @@ def get_sesion_details(id_sesion):
             'inicio': resumen.inicio,
             'desarrollo': resumen.desarrollo,
             'cierre': resumen.cierre
-        },
+        } if resumen else {},
         'resultado_rubrica': {
             'id': resultado_rubrica.id,
             'cumple_satis': resultado_rubrica.cumple_satis,
             'cumple': resultado_rubrica.cumple,
             'cumple_parcial': resultado_rubrica.cumple_parcial,
             'cumple_no': resultado_rubrica.cumple_no
-        },
+        } if resultado_rubrica else {},
         'feedback': {
             'id': feedback.id,
             'observacion': feedback.observacion,
             'hallazgos': feedback.hallazgos,
             'recomendacion': feedback.recomendacion,
             'fecha_feedback': feedback.fecha_feedback.strftime('%Y-%m-%d') if feedback.fecha_feedback else None
-        }
+        } if feedback else {}
     }
 
     return jsonify(sesion_details), 200
