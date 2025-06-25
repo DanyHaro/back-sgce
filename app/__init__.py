@@ -27,12 +27,16 @@ def create_app():
     from .blueprints.dashboard_principal.transcripcion import main_routes as trans_routes
     from .blueprints.dashboard_principal.resumen import main_routes as resumen_routes  
     from .blueprints.dashboard_principal.feedback import main_routes as feedback_routes
+    from .blueprints.dashboard_principal.resultado import main_routes as rubrica_routes
+
 
     app.register_blueprint(users_routes)
     app.register_blueprint(sesion_routes)
     app.register_blueprint(trans_routes) 
     app.register_blueprint(resumen_routes)
-    app.register_blueprint(feedback_routes) 
+    app.register_blueprint(feedback_routes)
+    app.register_blueprint(rubrica_routes) 
+
 
 
 
