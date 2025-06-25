@@ -130,6 +130,7 @@ def get_all_sessions():
             'id': sesion.id,
             'titulo': sesion.titulo,
             'institucion': sesion.institucion,
+            'nivel': sesion.nivel if sesion.nivel else None,
             'user': {
                 'id': user.id,
                 'nombre_completo': user.nombre_completo,
@@ -151,6 +152,7 @@ def get_session_by_id(id):
             'id': sesion.id,
             'titulo': sesion.titulo,
             'fecha_dictada': sesion.fecha_dictada.strftime('%Y-%m-%d') if sesion.fecha_dictada else None,
+            'nivel': sesion.nivel if sesion.nivel else None,
             'duracion_video': str(sesion.duracion_video),
             'fecha_creacion': sesion.fecha_creacion.strftime('%Y-%m-%d') if sesion.fecha_creacion else None,
             'id_user': sesion.id_user
@@ -179,6 +181,7 @@ def get_sesion_details(id_sesion):
         'duracion_video': sesion.duracion_video,
         'grabacion' : sesion.grabacion,
         'auditado' : sesion.auditado,
+        'nivel': sesion.nivel if sesion.nivel else None,
         'user': {
             'id': user.id,
             'nombre_completo': user.nombre_completo,
