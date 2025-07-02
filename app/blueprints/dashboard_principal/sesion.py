@@ -90,7 +90,7 @@ def create_sesion_firebase():
         )
         db.session.add(new_sesion)
         db.session.commit()
-        return jsonify({"message": "Sesión creada con éxito", "url": video_url}), 201
+        return jsonify({"message": "Sesión creada con éxito", "url": video_url, "code": 201}), 201
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({"message": "No se pudo guardar la sesión"}), 500
