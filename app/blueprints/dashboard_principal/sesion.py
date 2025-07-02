@@ -38,6 +38,23 @@ def create_sesion_firebase():
         return _bad("Debe subir la grabación de la sesión")
     if not allowed_file(video_file.filename):
         return _bad("El archivo debe ser un MP4")
+    
+    # ---------- 3. Convertir tipos ------------------------------------------------
+    # fecha_dictada  -> datetime.date
+    fecha_dictada_raw = request.form.get("fecha_dictada")
+    try:
+        fecha_dictada = datetime.strptime(fecha_dictada_raw, "%Y-%m-%d").date()
+    except (TypeError, ValueError):
+        return _bad("fecha_dictada debe tener formato AAAA-MM-DD")
+    
+    try:
+        id_user = int(request.form.get("id_user"))
+    except (TypeError, ValueError):
+        return _bad("id_user debe ser un entero")
+
+    if not db.session.query(User).get(id_user):
+        return _bad("El usuario indicado no existe")
+
 
     # ------ 2. Subida al bucket ---------------------------------------------------
     filename = secure_filename(video_file.filename)
@@ -64,7 +81,7 @@ def create_sesion_firebase():
             titulo         = request.form.get("titulo"),
             institucion    = request.form.get("institucion"),
             nivel          = request.form.get("nivel"),
-            fecha_dictada  = request.form.get("fecha_dictada"),
+            fecha_dictada  = fecha_dictada,
             #duracion_video = decimal.Decimal(request.form.get("duracion_video")),
             duracion_video = request.form.get("duracion_video"),
             descripcion    = request.form.get("descripcion"),
