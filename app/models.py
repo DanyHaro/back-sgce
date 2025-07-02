@@ -69,12 +69,13 @@ class Sesion(db.Model):
     institucion = db.Column(db.String, nullable = True)
     nivel = db.Column(db.String(100), nullable = True)
     fecha_dictada = db.Column(db.Date, nullable = True)
-    duracion_video = db.Column(db.Numeric(3,2), nullable = True)
+    duracion_video = db.Column(db.Numeric, nullable = True)
     fecha_creacion = db.Column(db.Date, nullable = True)
     descripcion = db.Column(db.String, nullable = True)
     grabacion = db.Column(db.String, nullable = True)
     auditado = db.Column(db.Boolean, default=False, nullable = True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    contenido = db.Column(db.String, nullable = True)
 
 class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -93,4 +94,42 @@ class AnalisisModelo(db.Model):
     id_resultado_rubrica = db.Column(db.Integer, db.ForeignKey('resultado_rubrica.id'), nullable = False)
     id_sesion = db.Column(db.Integer, db.ForeignKey('sesion.id'), nullable = False)
     id_feedback = db.Column(db.Integer, db.ForeignKey('feedback.id'), nullable = False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

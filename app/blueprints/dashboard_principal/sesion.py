@@ -3,77 +3,119 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from werkzeug.utils import secure_filename
 import firebase_admin
 from firebase_admin import credentials, storage
-import os
+import os, decimal, uuid
 from datetime import datetime
 from ...models import Sesion, db
 import json
+from sqlalchemy.exc import SQLAlchemyError
 from ...models import Transcripcion, Resumen, ResultadoRubrica, Feedback, User, db
 
 main_routes = Blueprint('sesions', __name__)
 
-# Obtener las credenciales desde la variable de entorno
-firebase_credentials = os.getenv('FIREBASE_CREDENTIALS')
-
-# Verificar que la variable no esté vacía
-if not firebase_credentials:
-    raise ValueError("FIREBASE_CREDENTIALS no está configurada correctamente o es None")
-
-# Convertir las credenciales desde JSON (en formato string) a un diccionario
-cred_dict = json.loads(firebase_credentials)
-
-# Inicializar Firebase Admin SDK con las credenciales
-cred = credentials.Certificate(cred_dict)
-firebase_admin.initialize_app(cred, {
-    'storageBucket': 'exam3-24564.appspot.com'
-})
-
-# Ruta para crear una nueva sesión con video MP4
-@main_routes.route('/sesion/create-firebase', methods=['POST'])
+@main_routes.route("/sesion/create-firebase", methods=["POST"])
 def create_sesion_firebase():
-    # Verificar si se ha enviado un archivo
-    if 'grabacion' not in request.files:
-        return jsonify({'message': 'Debe subir la grabación de la sesión.'}), 400
+    # ------ 1. Chequeo de archivo ------------------------------------------------
+    if "grabacion" not in request.files:
+        return _bad("Debe subir la grabación de la sesión")
+    video_file = request.files["grabacion"]
+    if video_file.filename == "":
+        return _bad("Debe subir la grabación de la sesión")
+    if not allowed_file(video_file.filename):
+        return _bad("El archivo debe ser un MP4")
 
-    video_file = request.files['grabacion']
+    # ------ 2. Subida al bucket ---------------------------------------------------
+    filename = secure_filename(video_file.filename)
+    bucket   = storage.bucket()                              # exam3-24564.appspot.com
+    blob     = bucket.blob(f"videos/{filename}")
 
-    # Verificar si el archivo tiene un nombre
-    if video_file.filename == '':
-        return jsonify({'message': 'Debe subir la grabación de la sesión.'}), 400
+    blob.upload_from_file(video_file, content_type="video/mp4")
 
-    # Verificar si el archivo es un MP4
-    if video_file and allowed_file(video_file.filename):
-        # Crear un nombre seguro para el archivo
-        filename = secure_filename(video_file.filename)
+    # ------ 3. Añadir token y construir la URL -----------------------------------
+    token = uuid.uuid4().hex                                # 🔑 token único
+    blob.metadata = {"firebaseStorageDownloadTokens": token}
+    blob.patch()                                            # guarda los metadatos
 
-        # Subir el archivo a Firebase Storage
-        bucket = storage.bucket()
-        blob = bucket.blob(f"videos/{filename}")
-        blob.upload_from_file(video_file)
+    quoted_path = urllib.parse.quote(blob.name, safe="")
+    video_url   = (
+        f"https://firebasestorage.googleapis.com/v0/b/{bucket.name}/o/{quoted_path}"
+        f"?alt=media&token={token}"
+    )
+    #  Ahora `video_url` se puede abrir desde cualquier navegador sin credenciales.
+    #  Ej.: https://firebasestorage.googleapis.com/v0/b/exam3-24564.appspot.com/o/videos%2Fpresent.mp4?alt=media&token=123abc...
 
-        # Crear una URL pública del video almacenado
-        video_url = blob.public_url
-
-        # Crear un nuevo registro de sesión en la base de datos
+    # ------ 4. Guardar en la base de datos ---------------------------------------
+    try:
         new_sesion = Sesion(
-            titulo=request.form.get('titulo'),
-            institucion=request.form.get('institucion'),
-            nivel=request.form.get('nivel'),
-            fecha_dictada=request.form.get('fecha_dictada'),
-            duracion_video=request.form.get('duracion_video'),
-            descripcion = request.form.get('descripcion'),
-            fecha_creacion=datetime.now().strftime('%Y-%m-%d'),
-            grabacion=video_url,
-            auditado=False,
-            id_user=request.form.get('id_user')
+            titulo         = request.form.get("titulo"),
+            institucion    = request.form.get("institucion"),
+            nivel          = request.form.get("nivel"),
+            fecha_dictada  = request.form.get("fecha_dictada"),
+            duracion_video = decimal.Decimal(request.form.get("duracion_video")),
+            descripcion    = request.form.get("descripcion"),
+            fecha_creacion = datetime.today().date(),
+            grabacion      = video_url,
+            auditado       = False,
+            id_user        = request.form.get("id_user"),
         )
-
-        # Guardar la sesión en la base de datos
         db.session.add(new_sesion)
         db.session.commit()
+    except (SQLAlchemyError, decimal.InvalidOperation) as e:
+        db.session.rollback()
+        return jsonify({"message": "Error al guardar la sesión"}), 500
 
-        return jsonify({'message': 'Sesión creada con éxito'}), 201
-    else:
-        return jsonify({'message': 'El archivo debe ser un MP4'}), 400
+    return jsonify({"message": "Sesión creada con éxito", "url": video_url}), 201
+
+def _bad(msg):   
+    return jsonify({"message": msg}), 400
+
+
+# ENDPOINT PARA GUARDAR UNA SESION V1
+# @main_routes.route('/sesion/create-firebase', methods=['POST'])
+# def create_sesion_firebase():
+#     # Verificar si se ha enviado un archivo
+#     if 'grabacion' not in request.files:
+#         return jsonify({'message': 'Debe subir la grabación de la sesión.'}), 400
+
+#     video_file = request.files['grabacion']
+
+#     # Verificar si el archivo tiene un nombre
+#     if video_file.filename == '':
+#         return jsonify({'message': 'Debe subir la grabación de la sesión.'}), 400
+
+#     # Verificar si el archivo es un MP4
+#     if video_file and allowed_file(video_file.filename):
+#         # Crear un nombre seguro para el archivo
+#         filename = secure_filename(video_file.filename)
+
+#         # Subir el archivo a Firebase Storage
+#         bucket = storage.bucket()
+#         blob = bucket.blob(f"videos/{filename}")
+#         blob.upload_from_file(video_file)
+
+#         # Crear una URL pública del video almacenado
+#         video_url = blob.public_url
+
+#         # Crear un nuevo registro de sesión en la base de datos
+#         new_sesion = Sesion(
+#             titulo=request.form.get('titulo'),
+#             institucion=request.form.get('institucion'),
+#             nivel=request.form.get('nivel'),
+#             fecha_dictada=request.form.get('fecha_dictada'),
+#             duracion_video=request.form.get('duracion_video'),
+#             descripcion = request.form.get('descripcion'),
+#             fecha_creacion=datetime.now().strftime('%Y-%m-%d'),
+#             grabacion=video_url,
+#             auditado=False,
+#             id_user=request.form.get('id_user')
+#         )
+
+#         # Guardar la sesión en la base de datos
+#         db.session.add(new_sesion)
+#         db.session.commit()
+
+#         return jsonify({'message': 'Sesión creada con éxito'}), 201
+#     else:
+#         return jsonify({'message': 'El archivo debe ser un MP4'}), 400
 
 
 # Ruta para crear una nueva sesión con video
