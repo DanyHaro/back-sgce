@@ -82,7 +82,6 @@ def create_sesion_firebase():
             institucion    = request.form.get("institucion"),
             nivel          = request.form.get("nivel"),
             fecha_dictada  = fecha_dictada,
-            #duracion_video = decimal.Decimal(request.form.get("duracion_video")),
             duracion_video = request.form.get("duracion_video"),
             descripcion    = request.form.get("descripcion"),
             fecha_creacion = datetime.now().strftime('%Y-%m-%d'),
