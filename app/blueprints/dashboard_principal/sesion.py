@@ -56,7 +56,6 @@ def create_sesion_firebase():
         f"https://firebasestorage.googleapis.com/v0/b/{bucket.name}/o/{quoted_path}"
         f"?alt=media&token={token}"
     )
-    #  Ahora `video_url` se puede abrir desde cualquier navegador sin credenciales.
     #  Ej.: https://firebasestorage.googleapis.com/v0/b/exam3-24564.appspot.com/o/videos%2Fpresent.mp4?alt=media&token=123abc...
 
     # ------ 4. Guardar en la base de datos ---------------------------------------
@@ -66,9 +65,10 @@ def create_sesion_firebase():
             institucion    = request.form.get("institucion"),
             nivel          = request.form.get("nivel"),
             fecha_dictada  = request.form.get("fecha_dictada"),
-            duracion_video = decimal.Decimal(request.form.get("duracion_video")),
+            #duracion_video = decimal.Decimal(request.form.get("duracion_video")),
+            duracion_video = request.form.get("duracion_video"),
             descripcion    = request.form.get("descripcion"),
-            fecha_creacion = datetime.today().date(),
+            fecha_creacion = datetime.now().strftime('%Y-%m-%d'),
             grabacion      = video_url,
             auditado       = False,
             id_user        = request.form.get("id_user"),
