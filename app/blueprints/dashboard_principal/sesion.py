@@ -74,42 +74,26 @@ def create_sesion_firebase():
         f"?alt=media&token={token}"
     )
     #  Ej.: https://firebasestorage.googleapis.com/v0/b/exam3-24564.appspot.com/o/videos%2Fpresent.mp4?alt=media&token=123abc...
-    new_sesion = Sesion(
-        titulo         = request.form.get("titulo"),
-        institucion    = request.form.get("institucion"),
-        nivel          = request.form.get("nivel"),
-        fecha_dictada  = fecha_dictada,
-        duracion_video = request.form.get("duracion_video"),
-        descripcion    = request.form.get("descripcion"),
-        fecha_creacion = datetime.now().strftime('%Y-%m-%d'),
-        grabacion      = video_url,
-        auditado       = False,
-        id_user        = request.form.get("id_user"),
+    
+    try: 
+        new_sesion = Sesion(
+            titulo         = request.form.get("titulo"),
+            institucion    = request.form.get("institucion"),
+            nivel          = request.form.get("nivel"),
+            fecha_dictada  = fecha_dictada,
+            duracion_video = request.form.get("duracion_video"),
+            descripcion    = request.form.get("descripcion"),
+            fecha_creacion = datetime.now().strftime('%Y-%m-%d'),
+            grabacion      = video_url,
+            auditado       = False,
+            id_user        = request.form.get("id_user"),
         )
-    db.session.add(new_sesion)
-    db.session.commit()
-    # ------ 4. Guardar en la base de datos ---------------------------------------
-    # try:
-    #     new_sesion = Sesion(
-    #         titulo         = request.form.get("titulo"),
-    #         institucion    = request.form.get("institucion"),
-    #         nivel          = request.form.get("nivel"),
-    #         fecha_dictada  = fecha_dictada,
-    #         duracion_video = request.form.get("duracion_video"),
-    #         descripcion    = request.form.get("descripcion"),
-    #         fecha_creacion = datetime.now().strftime('%Y-%m-%d'),
-    #         grabacion      = video_url,
-    #         auditado       = False,
-    #         id_user        = request.form.get("id_user"),
-    #     )
-    #     db.session.add(new_sesion)
-    #     db.session.commit()
-    # except (SQLAlchemyError, decimal.InvalidOperation) as e:
-    #     db.session.rollback()
-    #     return jsonify({"message": "Error al guardar la sesión"}), 500
-
-    return jsonify({"message": "Sesión creada con éxito", "url": video_url}), 201
-
+        db.session.add(new_sesion)
+        db.session.commit()
+        return jsonify({"message": "Sesión creada con éxito", "url": video_url}), 201
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"message": "No se pudo guardar la sesión"}), 500
 def _bad(msg):   
     return jsonify({"message": msg}), 400
 
