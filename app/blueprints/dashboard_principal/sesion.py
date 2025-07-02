@@ -3,7 +3,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from werkzeug.utils import secure_filename
 import firebase_admin
 from firebase_admin import credentials, storage
-import os, decimal, uuid
+import os, decimal, uuid, urllib.parse
 from datetime import datetime
 from ...models import Sesion, db
 import json
@@ -11,6 +11,22 @@ from sqlalchemy.exc import SQLAlchemyError
 from ...models import Transcripcion, Resumen, ResultadoRubrica, Feedback, User, db
 
 main_routes = Blueprint('sesions', __name__)
+
+# Obtener las credenciales desde la variable de entornoAdd commentMore actions
+firebase_credentials = os.getenv('FIREBASE_CREDENTIALS')
+
+# Verificar que la variable no esté vacía
+if not firebase_credentials:
+    raise ValueError("FIREBASE_CREDENTIALS no está configurada correctamente o es None")
+
+# Convertir las credenciales desde JSON (en formato string) a un diccionario
+cred_dict = json.loads(firebase_credentials)
+
+# Inicializar Firebase Admin SDK con las credenciales
+cred = credentials.Certificate(cred_dict)
+firebase_admin.initialize_app(cred, {
+    'storageBucket': 'exam3-24564.appspot.com'
+})
 
 @main_routes.route("/sesion/create-firebase", methods=["POST"])
 def create_sesion_firebase():
