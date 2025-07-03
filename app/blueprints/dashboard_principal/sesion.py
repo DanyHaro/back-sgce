@@ -290,6 +290,29 @@ def get_sesion_details(id_sesion):
 
     return jsonify(sesion_details), 200
 
+@main_routes.route("/sesion/<int:sesion_id>", methods=["DELETE"])
+def delete_sesion(sesion_id):
+    """
+    Elimina una Sesión existente.
+    Devuelve:
+      200  -> {'status': 'success', 'message': 'Sesión eliminada'}
+      404  -> {'status': 'error',   'message': 'Sesión no encontrada'}
+    """
+    sesion = Sesion.query.get(sesion_id)
+    if sesion is None:
+        return _bad("Sesión no encontrada")            # 404
+
+    try:
+        db.session.delete(sesion)
+        db.session.commit()
+        return jsonify({
+            "status": "success",
+            "message": "Sesión eliminada"
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return _bad(f"Error al eliminar: {e}") 
+
 
 # Función para verificar si el archivo es MP4
 def allowed_file(filename):
